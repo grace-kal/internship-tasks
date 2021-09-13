@@ -29,12 +29,16 @@ namespace TestsWin
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.btn_normal = new System.Windows.Forms.Button();
             this.btn_normal_parallel = new System.Windows.Forms.Button();
             this.btn_async = new System.Windows.Forms.Button();
             this.btn_parallel_async = new System.Windows.Forms.Button();
             this.textBox = new System.Windows.Forms.TextBox();
             this.labelMethod = new System.Windows.Forms.Label();
+            this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
+            this.progressLabel = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             this.SuspendLayout();
             // 
             // btn_normal
@@ -95,11 +99,24 @@ namespace TestsWin
             this.labelMethod.TabIndex = 9;
             this.labelMethod.Text = "Method";
             // 
+            // errorProvider1
+            // 
+            this.errorProvider1.ContainerControl = this;
+            // 
+            // progressLabel
+            // 
+            this.progressLabel.AutoSize = true;
+            this.progressLabel.Location = new System.Drawing.Point(763, 225);
+            this.progressLabel.Name = "progressLabel";
+            this.progressLabel.Size = new System.Drawing.Size(0, 20);
+            this.progressLabel.TabIndex = 10;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(881, 740);
+            this.Controls.Add(this.progressLabel);
             this.Controls.Add(this.labelMethod);
             this.Controls.Add(this.textBox);
             this.Controls.Add(this.btn_parallel_async);
@@ -108,6 +125,7 @@ namespace TestsWin
             this.Controls.Add(this.btn_normal);
             this.Name = "Form1";
             this.Text = "Form1";
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -121,6 +139,8 @@ namespace TestsWin
         private System.Windows.Forms.Button btn_parallel_async;
         private System.Windows.Forms.TextBox textBox;
         private System.Windows.Forms.Label labelMethod;
+        private System.Windows.Forms.ErrorProvider errorProvider1;
+        private System.Windows.Forms.Label progressLabel;
     }
 }
 

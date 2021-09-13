@@ -9,6 +9,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar;
 
 namespace TestsWin
 {
@@ -116,6 +117,8 @@ namespace TestsWin
         private void DownloadNormal()
         {
             List<string> urls = websites;
+            progressLabel.Text = "";
+
             foreach (string website in urls)
             {
                 WebsiteDataModel result = DownloadWebsite(website);
@@ -126,13 +129,18 @@ namespace TestsWin
         private async Task DownloadAsync()
         {
             List<string> urls = websites;
+            int count = 0;
+
             foreach (string website in urls)
             {
                 //if we can't change the DownloadWebsite method to an async one
                 //we're waiting for the website to download
                 //waiting time-sum of all download times
-                WebsiteDataModel result = await Task.Run(()=>DownloadWebsite(website));
+                WebsiteDataModel result = await Task.Run(() => DownloadWebsite(website));
                 ReportResult(result);
+
+                count++;
+                ReportProgress(count, urls.Count);
             }
         }
         //Parallel async download site
@@ -140,6 +148,7 @@ namespace TestsWin
         {
             List<string> urls = websites;
             List<Task<WebsiteDataModel>> taskItems = new List<Task<WebsiteDataModel>>();
+            progressLabel.Text = "";
 
             foreach (string website in urls)
             {
@@ -154,7 +163,7 @@ namespace TestsWin
             }
             //passing a list of task and waiting until all of them are done
             var results = await Task.WhenAll(taskItems);
-            foreach(WebsiteDataModel t in results)
+            foreach (WebsiteDataModel t in results)
             {
                 ReportResult(t);
             }
@@ -164,6 +173,7 @@ namespace TestsWin
         {
             List<string> urls = websites;
             List<WebsiteDataModel> items = new List<WebsiteDataModel>();
+            progressLabel.Text = "";
             //the Parallel class executes the selected operation(in this case ForEach) in parallel
             //---meaning that it doesn't wait for each loop to be done executing before firing the next one
             //although the Downloading of the website is still sync meaning that a Task is fired and the thread is blocked
@@ -171,10 +181,11 @@ namespace TestsWin
             //conceptually the threads are often said to run at the same time(in parallel),
             //---they are actually running consecutively in time slices 
             //closer look->Parallel schedules tasks to TaskScheduler, the scheduler then goes to the ThreadPool 
-            Parallel.ForEach<string>(urls, (website) => {
+            Parallel.ForEach<string>(urls, (website) =>
+            {
                 items.Add(DownloadWebsite(website));
             });
-            foreach(WebsiteDataModel t in items)
+            foreach (WebsiteDataModel t in items)
             {
                 ReportResult(t);
             }
@@ -187,7 +198,11 @@ namespace TestsWin
             res += resultString;
 
         }
+        // reporting the progress
+        private void ReportProgress(int downloadedCount, int allCount)
+        {
+            progressLabel.Text = downloadedCount + "/" + allCount;
+        }
 
-        
     }
 }
