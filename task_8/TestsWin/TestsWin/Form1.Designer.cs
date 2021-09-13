@@ -79,10 +79,10 @@ namespace TestsWin
             // 
             // textBox
             // 
-            this.textBox.Location = new System.Drawing.Point(38, 294);
+            this.textBox.Location = new System.Drawing.Point(38, 248);
             this.textBox.Multiline = true;
             this.textBox.Name = "textBox";
-            this.textBox.Size = new System.Drawing.Size(744, 401);
+            this.textBox.Size = new System.Drawing.Size(744, 447);
             this.textBox.TabIndex = 8;
             // 
             // labelMethod
