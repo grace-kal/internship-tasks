@@ -62,7 +62,7 @@ namespace TestsWin
             DownloadNormal();
             sw.Stop();
             var time = sw.ElapsedMilliseconds;
-            string conclusion = "Total time: " + time + "milliseconds.";
+            string conclusion = $"Total time: {time} milliseconds.";
             //result display needs opt
             res += conclusion;
             textBox.Text = res;
@@ -77,7 +77,7 @@ namespace TestsWin
             await DownloadAsync();
             sw.Stop();
             var time = sw.ElapsedMilliseconds;
-            string conclusion = "Total time: " + time + "milliseconds.";
+            string conclusion = $"Total time: {time} milliseconds.";
             //result display needs opt
             res += conclusion;
             textBox.Text = res;
@@ -92,7 +92,7 @@ namespace TestsWin
             await DownloadParallelAsync();
             sw.Stop();
             var time = sw.ElapsedMilliseconds;
-            string conclusion = "Total time: " + time + "milliseconds.";
+            string conclusion = $"Total time: {time} milliseconds.";
             //result display needs opt
             res += conclusion;
             textBox.Text = res;
@@ -107,7 +107,7 @@ namespace TestsWin
             DownloadParallelNormal();
             sw.Stop();
             var time = sw.ElapsedMilliseconds;
-            string conclusion = "Total time: " + time + "milliseconds.";
+            string conclusion = $"Total time: {time} milliseconds.";
             //result display needs opt
             res += conclusion;
             textBox.Text = res;
@@ -194,14 +194,14 @@ namespace TestsWin
         //reporting the results
         private void ReportResult(WebsiteDataModel result)
         {
-            string resultString = $"Site " + result.WebsiteUrl + " - " + result.WebsiteData.Length + " characters long downloaded" + Environment.NewLine;
+            string resultString = $"Site {result.WebsiteUrl} - {result.WebsiteData.Length} characters long downloaded {Environment.NewLine}";
             res += resultString;
 
         }
         // reporting the progress
         private void ReportProgress(int downloadedCount, int allCount)
         {
-            progressLabel.Text = downloadedCount + "/" + allCount;
+            progressLabel.Text = $"{downloadedCount}/{allCount}";
         }
 
     }
