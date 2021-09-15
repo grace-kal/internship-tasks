@@ -112,6 +112,8 @@ namespace TestsWin
             res += conclusion;
             textBox.Text = res;
         }
+       
+        
         //METHODS
         //Normal download site
         private void DownloadNormal()
@@ -192,6 +194,7 @@ namespace TestsWin
         }
 
         //reporting the results
+        //note:using StringBuilder or the $ way of concatinating strings is more efficient
         private void ReportResult(WebsiteDataModel result)
         {
             string resultString = $"Site {result.WebsiteUrl} - {result.WebsiteData.Length} characters long downloaded {Environment.NewLine}";

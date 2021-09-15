@@ -15,22 +15,12 @@ namespace DrawAsync
         public string RoofColor { get; set; }
         public string WallColor { get; set; }
 
-
-        static bool disposing = false;
-
         public House(string roofColor, string wallColor, int startPoint, int endPoint)
         {
             this.RoofColor = roofColor;
             this.WallColor = wallColor;
             this.StartPoint = startPoint;
             this.EndPoint = endPoint;
-        }
-        public static void Dispose(Brush brush)
-        {
-            if (disposing)
-            {
-                brush.Dispose();
-            }
         }
 
     }
