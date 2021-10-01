@@ -1,0 +1,35 @@
+﻿@page "/"
+
+
+@using Microsoft.AspNetCore.Identity;
+
+<AuthorizeView Roles="Admin">
+    <Authorized>
+        <NavLink href="dashboard">Dashboard</NavLink>
+    </Authorized>
+</AuthorizeView>
+<ul>
+    @foreach (Ticket t in tickets)
+    {
+        <li>@t.Title</li>
+        <li>@t.Content</li>
+    }
+</ul>
+<SurveyPrompt Title="How is Blazor working for you?" />
+@code {
+    List<Ticket> tickets = new();
+    protected override Task OnInitializedAsync()
+    {
+        List<Ticket> listOfTickets = new();
+        listOfTickets.Add(new Ticket { Title = "Title1", Content = "Content" });
+        listOfTickets.Add(new Ticket { Title = "Title2", Content = "Content" });
+        listOfTickets.Add(new Ticket { Title = "Title3", Content = "Content" });
+        listOfTickets.Add(new Ticket { Title = "Title4", Content = "Content" });
+        listOfTickets.Add(new Ticket { Title = "Title5", Content = "Content" });
+        tickets.AddRange(listOfTickets);
+
+        return base.OnInitializedAsync();
+    }
+
+
+}
