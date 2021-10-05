@@ -1,34 +1,58 @@
 ﻿@page "/"
 
-
 @using Microsoft.AspNetCore.Identity;
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ITicketService _ticketService
+
 
 <AuthorizeView Roles="Admin">
     <Authorized>
         <NavLink href="dashboard">Dashboard</NavLink>
     </Authorized>
 </AuthorizeView>
-<ul>
+<AuthorizeView Roles="Programmer">
+    <Authorized>
+        <NavLink href="/createTicket">Create ticket</NavLink>
+    </Authorized>
+    <NotAuthorized>
+        <p>To create ticket you need to be with a programmer role.</p>
+    </NotAuthorized>
+</AuthorizeView>
+<ul style="list-style:none;">
     @foreach (Ticket t in tickets)
     {
-        <li>@t.Title</li>
-        <li>@t.Content</li>
+        <NavLink href="/TicketDetails">
+            <li style="background-color: gray;">@t.Title</li>
+            <li style="background-color: gray;">@t.Content</li>
+            <NavLink href="/editTicket">Edit ticket</NavLink>
+            <NavLink href="/deleteTicket">Delete ticket</NavLink>
+        </NavLink>
     }
 </ul>
-<SurveyPrompt Title="How is Blazor working for you?" />
+
+
+
 @code {
     List<Ticket> tickets = new();
-    protected override Task OnInitializedAsync()
-    {
-        List<Ticket> listOfTickets = new();
-        listOfTickets.Add(new Ticket { Title = "Title1", Content = "Content" });
-        listOfTickets.Add(new Ticket { Title = "Title2", Content = "Content" });
-        listOfTickets.Add(new Ticket { Title = "Title3", Content = "Content" });
-        listOfTickets.Add(new Ticket { Title = "Title4", Content = "Content" });
-        listOfTickets.Add(new Ticket { Title = "Title5", Content = "Content" });
-        tickets.AddRange(listOfTickets);
 
-        return base.OnInitializedAsync();
+    protected async override Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        List<Ticket> listOfTickets = new();
+
+        if (user.IsInRole("Maintenance"))
+        {
+            tickets = (List<Ticket>)await _ticketService.GetAllTickets();
+        }
+        else if (user.IsInRole("Programmer"))
+        {
+            tickets = (List<Ticket>)await _ticketService.GetAllTicketsWithUsername(user.Identity.Name);
+        }
+
     }
 
 

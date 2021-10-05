@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SoftwareCompanyTicketSystem.App.Areas.Identity;
 using SoftwareCompanyTicketSystem.App.Seeder;
+using SoftwareCompanyTicketSystem.App.Services;
+using SoftwareCompanyTicketSystem.App.Services.Interfaces;
 using SoftwareCompanyTicketSystem.Data;
 using SoftwareCompanyTicketSystem.Models;
 using System;
@@ -45,6 +47,7 @@ namespace SoftwareCompanyTicketSystem.App
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<User>>();
             services.AddDatabaseDeveloperPageExceptionFilter();
+            services.AddScoped<ITicketService, TicketService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

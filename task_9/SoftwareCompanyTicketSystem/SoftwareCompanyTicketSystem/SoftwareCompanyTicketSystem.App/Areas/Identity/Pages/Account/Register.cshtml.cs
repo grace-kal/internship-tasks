@@ -76,13 +76,13 @@ namespace SoftwareCompanyTicketSystem.App.Areas.Identity.Pages.Account
 
             [Required]
             [Display(Name = "Role")]
-            public string Role { get; set; }
+            public int Role { get; set; }
 
             [Display(Name = "Level")]
-            public string Level { get; set; }
+            public int Level { get; set; }
 
             [Display(Name = "Affiliate")]
-            public string Affiliate { get; set; }
+            public int Affiliate { get; set; }
 
         }
 
@@ -98,11 +98,37 @@ namespace SoftwareCompanyTicketSystem.App.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new User { UserName = Input.Username, Email = Input.Email,FName=Input.FirstName,LName=Input.LastName,Level=Input.Level,Affiliate=Input.Affiliate };
+                var user = new User { 
+                    UserName = Input.Username,
+                    Email = Input.Email, 
+                    FName = Input.FirstName, 
+                    LName = Input.LastName
+                };
+                //1-maintenance---affiliate: techsupport-1, office-2
+                //2-programmer---level: junior-1, mid-2, senior-3
+                string fur;
+                if (Input.Role == 2)
+                {
+                    fur = "Programmer";
+                    if (Input.Level == 1)
+                        user.Level = "Junior";
+                    else if (Input.Level == 2)
+                        user.Level = "Mid";
+                    else
+                        user.Level = "Senior";
+                }
+                else
+                {
+                    fur = "Maintenance";
+                    if (Input.Affiliate == 1)
+                        user.Affiliate = "TechSupport";
+                    else
+                        user.Affiliate = "Office";
+                }
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
-                    await _userManager.AddToRoleAsync(user, Input.Role);
+                    await _userManager.AddToRoleAsync(user, fur);
 
                     _logger.LogInformation("User created a new account with password.");
 

@@ -19,8 +19,4 @@
     <ProjectReference Include="..\SoftwareCompanyTicketSystem.Data\SoftwareCompanyTicketSystem.Data.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\Interfaces\" />
-  </ItemGroup>
-
 </Project>

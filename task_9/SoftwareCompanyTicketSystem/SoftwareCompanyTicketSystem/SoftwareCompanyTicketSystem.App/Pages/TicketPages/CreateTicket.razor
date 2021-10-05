@@ -1,0 +1,43 @@
+﻿@page "/createTicket"
+@attribute [Authorize(Roles = "Programmer")]
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.ComponentModel.DataAnnotations
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ITicketService _ticketService
+@inject NavigationManager _navigationManager
+
+<h3>CreateTicket</h3>
+<EditForm Model="@ticket" OnValidSubmit="ValidFormSubmmited">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <ValidationSummary></ValidationSummary>
+
+    <label>Title:</label>
+    <br />
+    <InputText id="title" @bind-Value="ticket.Title"></InputText>
+    <br />
+    <label>Content:</label>
+    <br />
+    <InputTextArea id="content" @bind-Value="ticket.Content"></InputTextArea>
+    <br />
+    <button type="submit">Submit</button>
+</EditForm>
+
+@code {
+
+    string status = null;
+    Ticket ticket = new();
+    private async Task ValidFormSubmmited()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        Ticket newTicket = new();
+        newTicket.Title = ticket.Title;
+        newTicket.Content = ticket.Content;
+        newTicket.SendOn = DateTime.Now;
+        newTicket.AuthorId = await _ticketService.FindUserIdByUsername(user.Identity.Name);
+
+        await _ticketService.CreateTicket(newTicket);
+        _navigationManager.NavigateTo("/");
+    }
+}
