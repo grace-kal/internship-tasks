@@ -18,12 +18,12 @@ namespace SoftwareCompanyTicketSystem.Models
         }
 
         [Required,
-         MaxLength(30, ErrorMessage = "Maximum length is 30 characters"),
+         MaxLength(30, ErrorMessage = "Maximum length is 30 characters."),
          Column(TypeName = "varchar")]
         public string FName { get; set; }
 
         [Required,
-         MaxLength(30, ErrorMessage = "Maximum length is 30 characters"),
+         MaxLength(30, ErrorMessage = "Maximum length is 30 characters."),
          Column(TypeName = "varchar")]
         public string LName { get; set; }
 

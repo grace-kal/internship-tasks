@@ -1,0 +1,65 @@
+﻿@inject ITicketService _ticketService
+@if (displayDialog)
+{
+    <div class="modal fade show d-block" id="exampleModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="titleLabel">Delete this ticket?</h5>
+                    <button type="button" class="close" @onclick="@Close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-danger">@status</p>
+                    <p class="alert-danger">This action is permanent!</p>
+                    <button type="submit" class="btn btn-danger" @onclick="@Delete">Delete</button>
+                    <a class="btn btn-outline-dark" @onclick="@Close">Close</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    //passed parameter FROM the child component above this one in the hierarchy(_ListOfTickets)
+    [Parameter]
+    public int TicketId { get; set; }
+
+    //parameter eventcallback when ticket is deleted send TO the child component above this one in the hierarchy(_ListOfTickets)
+    [Parameter]
+    public EventCallback TicketDeletedEC { get; set; }
+
+    private bool displayDialog = false;
+    private string status;
+
+    public void Show()
+    {
+        this.displayDialog = true;
+        StateHasChanged();
+    }
+    public void Close()
+    {
+        this.displayDialog = false;
+        StateHasChanged();
+    }
+    public async Task Delete()
+    {
+        try
+        {
+            //deleting ticket
+            await _ticketService.DeleteTicket(TicketId);
+            //status message
+            status = "Ticket deleted!";
+            //eventcallback TO the component above this one in the hierarchy(_ListOfTickets) then TO the parent component
+            //---(Index) to display updated version of the list with tickets
+            await TicketDeletedEC.InvokeAsync();
+
+        }
+        catch (Exception e)
+        {
+
+        }
+
+    }
+}

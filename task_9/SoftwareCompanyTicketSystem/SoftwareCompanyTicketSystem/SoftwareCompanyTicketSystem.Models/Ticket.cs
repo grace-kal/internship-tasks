@@ -20,11 +20,11 @@ namespace SoftwareCompanyTicketSystem.Models
         public int TicketId { get; set; }
 
         [Required]
-        [Column(TypeName = "nvarchar")]
+        [Column(TypeName = "nvarchar"), MaxLength(200, ErrorMessage = "Maximum length is 200 characters.")]
         public string Title { get; set; }
 
         [Required]
-        [Column(TypeName = "ntext")]
+        [Column(TypeName = "ntext"), MaxLength(500,ErrorMessage = "Maximum length is 500 characters.")]
         public string Content { get; set; }
 
         [Column(TypeName = "datetime2")]

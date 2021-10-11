@@ -1,0 +1,82 @@
+﻿@inject ITicketService _ticketService
+@if (displayDialog)
+{
+    <div class="modal fade show d-block" id="exampleModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="titleLabel">Edit this ticket?</h5>
+                    <button type="button" class="close" @onclick="@Close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="alert-info">@status</p>
+                    <EditForm Model="@ticket" OnValidSubmit="Edit">
+                        <DataAnnotationsValidator></DataAnnotationsValidator>
+                        <ValidationSummary></ValidationSummary>
+                        <label>Title:</label>
+                        <br />
+                        <InputText id="title" @bind-Value="ticket.Title"></InputText>
+                        <br />
+                        <label>Content:</label>
+                        <br />
+                        <InputTextArea id="content" @bind-Value="ticket.Content"></InputTextArea>
+                        <br />
+                        <button type="submit" class="btn btn-info" @onclick="@Edit">Edit</button>
+                    </EditForm>
+                    <a class="btn btn-outline-dark" @onclick="@Close">Close</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    //passed parameter FROM the child component above this one
+    //note: it might not be needed as the id is passed through the Show() method
+    [Parameter]
+    public int TicketId { get; set; }
+
+    //parameter eventcallback when ticket is edited  TO the child component above this one in the hierarchy(_ListOfTickets)
+    [Parameter]
+    public EventCallback TicketEditedEC { get; set; }
+
+    Ticket ticket = new();
+    private bool displayDialog = false;
+    private string status;
+
+    //id is passed FROM the child component above this one in the hierarchy(_ListOfTickets)
+    public async Task Show(int id)
+    {
+        this.displayDialog = true;
+        //finding the ticket with the passed id
+        ticket = await _ticketService.ReadTicket(id);
+    }
+    public void Close()
+    {
+        this.displayDialog = false;
+        status = "";
+    }
+    public async Task Edit()
+    {
+        try
+        {
+            Ticket t = new();
+            t.TicketId = ticket.TicketId;
+            t.Title = ticket.Title;
+            t.Content = ticket.Content;
+            t.SendOn = ticket.SendOn;
+            t.AuthorId = ticket.AuthorId;
+            await _ticketService.EditTicket(t);
+            status = "Ticket edited!";
+            //eventcallback to the child component above this one in the hierarchy(_ListOfTickets)
+            await TicketEditedEC.InvokeAsync();
+        }
+        catch (Exception e)
+        {
+
+        }
+
+    }
+}

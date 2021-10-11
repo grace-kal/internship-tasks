@@ -1,0 +1,79 @@
+﻿@page "/editTicket/{id:int}"
+@attribute [Authorize(Roles = "Programmer")]
+
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ITicketService _ticketService
+@inject NavigationManager _navigationManager
+<AuthorizeView Context="eContext">
+    @if (eContext.User.Identity.Name == ticket.Author.UserName)
+    {
+        <h3>Edit Ticket</h3>
+        <EditForm Model="@ticket" OnValidSubmit="ValidFormSubmmited">
+            <DataAnnotationsValidator></DataAnnotationsValidator>
+            <ValidationSummary></ValidationSummary>
+            <label>Title:</label>
+            <br />
+            <InputText id="title" @bind-Value="ticket.Title"></InputText>
+            <br />
+            <label>Content:</label>
+            <br />
+            <InputTextArea id="content" @bind-Value="ticket.Content"></InputTextArea>
+            <br />
+            <button type="submit">Submit</button>
+        </EditForm>
+    }
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    Ticket ticket = new();
+
+    protected async override Task OnParametersSetAsync()
+    {
+        try
+        {
+            ticket = await _ticketService.ReadTicket(Id);
+        }
+        catch (Exception e)
+        {
+            var gg = e;
+        }
+    }
+    //protected async override Task OnInitializedAsync()
+    //{
+    //    await SeedTicket();
+    //}
+    private async Task SeedTicket()
+    {
+        try
+        {
+            ticket = await _ticketService.ReadTicket(Id);
+        }
+        catch (Exception e)
+        {
+            var gg = e;
+        }
+    }
+    private async Task ValidFormSubmmited()
+    {
+        Ticket newTicket = new();
+        newTicket.TicketId = ticket.TicketId;
+        newTicket.Title = ticket.Title;
+        newTicket.Content = ticket.Content;
+        newTicket.SendOn = ticket.SendOn;
+        newTicket.AuthorId = ticket.AuthorId;
+        try
+        {
+            await _ticketService.EditTicket(newTicket);
+            _navigationManager.NavigateTo("/");
+        }
+        catch (Exception ex)
+        {
+            var gg = ex;
+        }
+    }
+
+}

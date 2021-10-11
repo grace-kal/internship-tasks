@@ -1,12 +1,12 @@
 ﻿@page "/createTicket"
 @attribute [Authorize(Roles = "Programmer")]
+
 @using Microsoft.AspNetCore.Components.Authorization
-@using System.ComponentModel.DataAnnotations
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ITicketService _ticketService
 @inject NavigationManager _navigationManager
 
-<h3>CreateTicket</h3>
+<h3>Create Ticket</h3>
 <EditForm Model="@ticket" OnValidSubmit="ValidFormSubmmited">
     <DataAnnotationsValidator></DataAnnotationsValidator>
     <ValidationSummary></ValidationSummary>
@@ -24,7 +24,6 @@
 
 @code {
 
-    string status = null;
     Ticket ticket = new();
     private async Task ValidFormSubmmited()
     {
@@ -36,8 +35,14 @@
         newTicket.Content = ticket.Content;
         newTicket.SendOn = DateTime.Now;
         newTicket.AuthorId = await _ticketService.FindUserIdByUsername(user.Identity.Name);
-
-        await _ticketService.CreateTicket(newTicket);
-        _navigationManager.NavigateTo("/");
+        try
+        {
+            await _ticketService.CreateTicket(newTicket);
+            _navigationManager.NavigateTo("/");
+        }
+        catch(Exception ex)
+        {
+            var gg = ex;
+        }
     }
 }
