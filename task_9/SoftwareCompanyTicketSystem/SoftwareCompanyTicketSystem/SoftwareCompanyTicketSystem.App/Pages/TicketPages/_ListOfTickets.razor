@@ -10,11 +10,14 @@
             <i style="text-align:right;">Chat(@t.ChatMessages.Count())</i>
             <h2>@t.Title</h2>
             <h4>@t.Content</h4>
-            <NavLink href="@($"/detailsTicket/{t.TicketId}")"><a class="text-info">Details</a></NavLink>
+            @* if details are on page with id send *@
+            @*<NavLink href="@($"/detailsTicket/{t.TicketId}")"><a class="text-info">Details</a></NavLink>*@
+            <button class="btn btn-info" @onclick="@(async() => { await detailsTicketDialog.Show(t.TicketId); })">
+                Details
+            </button>
             <AuthorizeView Context="iContext">
                 @if (iContext.User.Identity.Name == t.Author.UserName)
                 {
-                    @*<NavLink href="@($"/editTicket/{t.TicketId}")">Edit ticket</NavLink>*@
                     <button class="btn btn-outline-info"
                             @onclick="@(async ()=> { await editTicketDialog.Show(t.TicketId);ticketId = t.TicketId; })">
                         Edit
@@ -32,6 +35,8 @@
 <_DeleteTicketDialog @ref="deleteTicketDialog" TicketId="ticketId" TicketDeletedEC="RefreshOnTicketDeleted"></_DeleteTicketDialog>
 @* edit dialog *@
 <_EditTicketDialog @ref="editTicketDialog" TicketId="ticketId" TicketEditedEC="RefreshOnTicketEdited"></_EditTicketDialog>
+@*details dialog*@
+<_DetailsTicket @ref="detailsTicketDialog" TicketId="ticketId"></_DetailsTicket>
 
 @code {
     [Parameter]
@@ -43,6 +48,7 @@
 
     private _DeleteTicketDialog deleteTicketDialog;
     private _EditTicketDialog editTicketDialog;
+    private _DetailsTicket detailsTicketDialog;
     private int ticketId;
 
     //when eventcallback for editing is triggered we call this method 

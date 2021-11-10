@@ -12,6 +12,7 @@ using SoftwareCompanyTicketSystem.Models;
 namespace SoftwareCompanyTicketSystem.App.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
+    [IgnoreAntiforgeryToken]
     public class LogoutModel : PageModel
     {
         private readonly SignInManager<User> _signInManager;

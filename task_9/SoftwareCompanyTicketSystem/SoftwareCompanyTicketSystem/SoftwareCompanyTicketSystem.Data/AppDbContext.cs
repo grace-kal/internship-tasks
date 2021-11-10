@@ -18,13 +18,13 @@ namespace SoftwareCompanyTicketSystem.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<ChatMessage> ChatMessages { get; set; }
-        public DbSet<File> Files { get; set; }
+        public DbSet<FilePath> FilePaths { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<Ticket>().HasQueryFilter(t => !t.IsDeleted);
             builder.Entity<ChatMessage>().HasQueryFilter(cm => !cm.Ticket.IsDeleted);
-            builder.Entity<File>().HasQueryFilter(f => !f.ChatMessage.IsDeleted);
+            builder.Entity<FilePath>().HasQueryFilter(fp=>!fp.IsDeleted);
             base.OnModelCreating(builder);
         }
     }

@@ -1,0 +1,42 @@
+﻿@inject ITicketService _ticketService
+@inject IChatMessageService _cmService
+@inject IFilePathService _fpService
+    @if (displayDialog)
+    {
+    <div class="modal fade show d-block" id="exampleModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="titleLabel">Edit this ticket?</h5>
+                    <button type="button" class="close" @onclick="@Close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @t.Content
+                    <a class="btn btn-outline-dark" @onclick="@Close">Close</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+
+    @code {
+        [Parameter]
+        public int TicketId { get; set; }
+
+        private Ticket t;
+        private bool displayDialog;
+
+        //id is passed FROM the child component above this one in the hierarchy(_ListOfTickets)
+        public async Task Show(int id)
+        {
+            this.displayDialog = true;
+            //finding the ticket with the passed id
+            t = await _ticketService.ReadTicket(id);
+        }
+        public void Close()
+        {
+            this.displayDialog = false;
+        }
+    }

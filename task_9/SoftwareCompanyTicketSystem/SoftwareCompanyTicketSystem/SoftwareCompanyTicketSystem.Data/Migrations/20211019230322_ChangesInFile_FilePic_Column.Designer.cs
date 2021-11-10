@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SoftwareCompanyTicketSystem.Data;
 
 namespace SoftwareCompanyTicketSystem.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211019230322_ChangesInFile_FilePic_Column")]
+    partial class ChangesInFile_FilePic_Column
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -257,9 +259,9 @@ namespace SoftwareCompanyTicketSystem.Data.Migrations
                     b.ToTable("ChatMessages");
                 });
 
-            modelBuilder.Entity("SoftwareCompanyTicketSystem.Models.FilePath", b =>
+            modelBuilder.Entity("SoftwareCompanyTicketSystem.Models.File", b =>
                 {
-                    b.Property<int>("FilePathId")
+                    b.Property<int>("FileId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -267,18 +269,23 @@ namespace SoftwareCompanyTicketSystem.Data.Migrations
                     b.Property<int>("ChatMessageId")
                         .HasColumnType("int");
 
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("varchar(250)");
+
+                    b.Property<byte[]>("FilePic")
+                        .IsRequired()
+                        .HasColumnType("varbinary");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Path")
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
-
-                    b.HasKey("FilePathId");
+                    b.HasKey("FileId");
 
                     b.HasIndex("ChatMessageId");
 
-                    b.ToTable("FilePaths");
+                    b.ToTable("Files");
                 });
 
             modelBuilder.Entity("SoftwareCompanyTicketSystem.Models.Ticket", b =>
@@ -411,10 +418,10 @@ namespace SoftwareCompanyTicketSystem.Data.Migrations
                     b.Navigation("Ticket");
                 });
 
-            modelBuilder.Entity("SoftwareCompanyTicketSystem.Models.FilePath", b =>
+            modelBuilder.Entity("SoftwareCompanyTicketSystem.Models.File", b =>
                 {
                     b.HasOne("SoftwareCompanyTicketSystem.Models.ChatMessage", "ChatMessage")
-                        .WithMany("FilePaths")
+                        .WithMany("Files")
                         .HasForeignKey("ChatMessageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -433,7 +440,7 @@ namespace SoftwareCompanyTicketSystem.Data.Migrations
 
             modelBuilder.Entity("SoftwareCompanyTicketSystem.Models.ChatMessage", b =>
                 {
-                    b.Navigation("FilePaths");
+                    b.Navigation("Files");
                 });
 
             modelBuilder.Entity("SoftwareCompanyTicketSystem.Models.Ticket", b =>

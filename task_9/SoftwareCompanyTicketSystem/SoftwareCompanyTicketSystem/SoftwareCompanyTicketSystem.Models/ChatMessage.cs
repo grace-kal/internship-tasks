@@ -12,7 +12,7 @@ namespace SoftwareCompanyTicketSystem.Models
     {
         public ChatMessage()
         {
-            this.Files = new List<File>();
+            this.FilePaths = new List<FilePath>();
         }
 
         [Key]
@@ -26,7 +26,7 @@ namespace SoftwareCompanyTicketSystem.Models
 
         public bool IsDeleted { get; set; }
 
-        public virtual List<File> Files { get; set; }
+        public virtual List<FilePath> FilePaths { get; set; }
 
         [ForeignKey("User")]
         public string AuthorId { get; set; }

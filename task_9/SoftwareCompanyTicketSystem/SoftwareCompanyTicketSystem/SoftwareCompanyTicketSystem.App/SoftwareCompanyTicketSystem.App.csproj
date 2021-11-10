@@ -19,4 +19,8 @@
     <ProjectReference Include="..\SoftwareCompanyTicketSystem.Data\SoftwareCompanyTicketSystem.Data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\uploads\" />
+  </ItemGroup>
+
 </Project>

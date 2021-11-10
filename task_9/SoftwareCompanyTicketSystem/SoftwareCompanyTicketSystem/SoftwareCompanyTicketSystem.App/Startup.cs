@@ -48,7 +48,9 @@ namespace SoftwareCompanyTicketSystem.App
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<User>>();
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddScoped<ITicketService, TicketService>();
-            
+            services.AddScoped<IChatMessageService, ChatMessageService>();
+            services.AddScoped<IFilePathService, FilePathService>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

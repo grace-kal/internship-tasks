@@ -8,20 +8,16 @@ using System.Threading.Tasks;
 
 namespace SoftwareCompanyTicketSystem.Models
 {
-    public class File
+    public class FilePath
     {
         [Key]
-        public int FileId { get; set; }
+        public int FilePathId { get; set; }
 
-        [Required, Column(TypeName = "varchar"), MaxLength(250)]
-        public string FileName { get; set; }
-
-        [Required, Column(TypeName = "varbinary")]
-        public string FilePic { get; set; }
-
+        [MinLength(5),MaxLength(100), Column(TypeName = "varchar")]
+        public string Path { get; set; }
         public bool IsDeleted { get; set; }
 
-        [ForeignKey("ChatMessage"), Required]
+        [ForeignKey("ChatMessage")]
         public int ChatMessageId { get; set; }
         public virtual ChatMessage ChatMessage { get; set; }
     }

@@ -2,9 +2,17 @@
 @attribute [Authorize(Roles = "Programmer")]
 
 @using Microsoft.AspNetCore.Components.Authorization
+@using System.IO
+
+@using Microsoft.AspNetCore.Hosting
+@inject IWebHostEnvironment _environment
+
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@inject ITicketService _ticketService
 @inject NavigationManager _navigationManager
+
+@inject ITicketService _ticketService
+@inject IChatMessageService _cmService
+@inject IFilePathService _fpService
 
 <h3>Create Ticket</h3>
 <EditForm Model="@ticket" OnValidSubmit="ValidFormSubmmited">
@@ -19,30 +27,183 @@
     <br />
     <InputTextArea id="content" @bind-Value="ticket.Content"></InputTextArea>
     <br />
+    <InputFile OnChange="LoadFiles" multiple></InputFile>
+    <br />
     <button type="submit">Submit</button>
 </EditForm>
+<span class="table-info">
+    @uploadStatus
+</span>
 
 @code {
 
-    Ticket ticket = new();
+    private Ticket ticket = new();
+    private ChatMessage cm = new();
+
+    //private List<IBrowserFile> loadedFiles = new();
+    private List<string> filesPaths = new();
+    private long maxFileSize = 1024 * 15;
+    private int maxAllowedFiles = 3;
+    private string uploadStatus = "";
+    private string warningStatus = "";
+
+
     private async Task ValidFormSubmmited()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
         Ticket newTicket = new();
+        ChatMessage newChatMessage = new();
+
+        //ticket setting
         newTicket.Title = ticket.Title;
         newTicket.Content = ticket.Content;
         newTicket.SendOn = DateTime.Now;
         newTicket.AuthorId = await _ticketService.FindUserIdByUsername(user.Identity.Name);
+
+
         try
         {
-            await _ticketService.CreateTicket(newTicket);
+            int idOfCreatedTicket = await _ticketService.CreateTicket(newTicket);
+            if (!filesPaths.Equals(null))
+            {
+                //chatmessage settings
+                newChatMessage.AuthorId = newTicket.AuthorId;
+                newChatMessage.SendOn = newTicket.SendOn;
+
+                newChatMessage.TicketId = idOfCreatedTicket;
+                int idOfCreatedChatMessage = await _cmService.CreateChatMessage(newChatMessage);
+                foreach (string fp in filesPaths)
+                {
+                    //filepath settings
+                    FilePath f = new()
+                    {
+                        ChatMessageId = idOfCreatedChatMessage,
+                        Path = fp
+                    };
+                    await _fpService.CreateFilePath(f);
+                }
+
+            }
+
             _navigationManager.NavigateTo("/");
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            var gg = ex;
+            var gg = $"Error: {ex.Message}";
         }
+    }
+    private async Task LoadFiles(InputFileChangeEventArgs e)
+    {
+        uploadStatus = "Uploading";
+        filesPaths.Clear();
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        //one file
+
+        //try
+        //{
+        //    var file = await e.File.RequestImageFileAsync("image/jpeg", 680, 480);
+        //    if (file == null)
+        //    {
+
+        //    }
+        //    if (file.Size != 0)
+        //    {
+        //        //string path = $@"{_environment.WebRootPath}\uploads\{file.Name}";
+        //        //string pathNewName = Path.Combine(
+        //        //    _environment.WebRootPath,
+        //        //    "uploads",
+        //        //    Path.Combine(Path.GetFileNameWithoutExtension(Path.GetRandomFileName()),Path.GetExtension(file.Name)));
+        //        //string path = Path.Combine(_environment.WebRootPath, "uploads", file.Name);
+
+        //        //using MemoryStream ms = new();
+        //        //Stream fs = file.OpenReadStream();
+        //        //await fs.CopyToAsync(ms);
+        //        //await File.WriteAllBytesAsync(path,ms.ToArray());
+
+        //    }
+        //}
+        //catch (Exception ex)
+        //{
+
+        //}
+
+
+        //multiple files
+        if (e.FileCount > maxAllowedFiles)
+        {
+            uploadStatus = $"Max files allowed {maxAllowedFiles}!";
+        }
+        else
+        {
+            foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
+            {
+                try
+                {
+                    if (!file.Equals(null))
+                    {
+                        if (file.Size > 0)
+                        {
+                            if (file.Size > 512000)
+                            {
+                                warningStatus = $"{file.Name} 's size is too big!";
+                            }
+                            else
+                            {
+                                //getting random file name
+                                //var newFileName = Path.GetRandomFileName();
+                                //removing the random extension
+                                //var nameWithouthExtension = Path.GetFileNameWithoutExtension(newFileName);
+                                //getting the extension of the given file
+                                //var fileExtension = Path.GetExtension(Path.GetFileName(file.Name));
+                                //full new name that consists of the real extension and random name FOR WRITING
+                                //var trustedFileNameForFileStorage = $"{nameWithouthExtension}{fileExtension}";
+
+                                //the files for a particular user will be saved in their own folder
+                                var userFolder = user.Identity.Name;
+                                //the full path
+                                var pathToUserFolder = Path.Combine(_environment.WebRootPath, "uploads", userFolder);
+
+                                var pathForFile = Path.Combine(pathToUserFolder, file.Name);
+
+                                //checking for folder for the user
+                                if (!Directory.Exists(pathToUserFolder))
+                                {
+                                    Directory.CreateDirectory(pathToUserFolder);
+                                }
+
+                                using (Stream fs = file.OpenReadStream())
+                                using (var ms = new MemoryStream())
+                                {
+                                    await fs.CopyToAsync(ms);
+                                    if (!Directory.Exists(pathForFile))
+                                    {
+                                        await File.WriteAllBytesAsync(pathForFile, ms.ToArray());
+                                        filesPaths.Add(pathForFile);
+                                    }
+                                    else
+                                    {
+                                        //if file has already been uploaded just save the path
+                                        filesPaths.Add(pathForFile);
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+            }
+            uploadStatus = "Uploaded!";
+        }
+
+
+
     }
 }
