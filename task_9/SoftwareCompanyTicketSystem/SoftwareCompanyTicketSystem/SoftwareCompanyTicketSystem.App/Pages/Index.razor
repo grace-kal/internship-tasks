@@ -38,12 +38,12 @@
         if (user.IsInRole("Maintenance"))
         {
             tickets = (List<Ticket>)await _ticketService.GetAllTickets();
-            tickets.OrderBy(t => t.SendOn);
+            tickets.OrderByDescending(t => t.SendOn);
         }
         else if (user.IsInRole("Programmer"))
         {
             tickets = (List<Ticket>)await _ticketService.GetAllTicketsWithUsername(user.Identity.Name);
-            tickets.OrderBy(t => t.SendOn);
+            tickets.OrderByDescending(t => t.SendOn);
         }
     }
 

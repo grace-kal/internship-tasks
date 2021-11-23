@@ -20,7 +20,8 @@ namespace SoftwareCompanyTicketSystem.App.Services
             FilePath fp = new()
             {
                 ChatMessageId=model.ChatMessageId,
-                Path=model.Path
+                Path=model.Path,
+                ShortPath=model.ShortPath
             };
             await _context.FilePaths.AddAsync(fp);
             await _context.SaveChangesAsync();

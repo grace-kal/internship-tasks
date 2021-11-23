@@ -1,6 +1,6 @@
 ﻿
 <ul style="list-style:none;">
-    @foreach (Ticket t in Tickets)
+    @foreach (Ticket t in Tickets.OrderByDescending(t=>t.SendOn))
     {
         <li style="border:solid 2px black; margin:10px;padding:10px;">
             <i>Send by: @t.Author.UserName (@t.Author.Level)</i>
@@ -12,7 +12,8 @@
             <h4>@t.Content</h4>
             @* if details are on page with id send *@
             @*<NavLink href="@($"/detailsTicket/{t.TicketId}")"><a class="text-info">Details</a></NavLink>*@
-            <button class="btn btn-info" @onclick="@(async() => { await detailsTicketDialog.Show(t.TicketId); })">
+            <button class="btn btn-info"
+                    @onclick="@(async() => { await detailsTicketDialog.Show(t.TicketId);ticketId = t.TicketId; })">
                 Details
             </button>
             <AuthorizeView Context="iContext">
@@ -36,7 +37,7 @@
 @* edit dialog *@
 <_EditTicketDialog @ref="editTicketDialog" TicketId="ticketId" TicketEditedEC="RefreshOnTicketEdited"></_EditTicketDialog>
 @*details dialog*@
-<_DetailsTicket @ref="detailsTicketDialog" TicketId="ticketId"></_DetailsTicket>
+<_DetailsTicketDialog @ref="detailsTicketDialog" TicketId="ticketId"></_DetailsTicketDialog>
 
 @code {
     [Parameter]
@@ -48,10 +49,11 @@
 
     private _DeleteTicketDialog deleteTicketDialog;
     private _EditTicketDialog editTicketDialog;
-    private _DetailsTicket detailsTicketDialog;
+    //private _DetailsTicket detailsTicketDialog;
+    private _DetailsTicketDialog detailsTicketDialog;
     private int ticketId;
 
-    //when eventcallback for editing is triggered we call this method 
+    //when eventcallback for editing is triggered we call this method
     private void RefreshOnTicketEdited()
     {
         StateHasChanged();

@@ -41,7 +41,8 @@
     private ChatMessage cm = new();
 
     //private List<IBrowserFile> loadedFiles = new();
-    private List<string> filesPaths = new();
+    //key-long path, value-short path
+    private Dictionary<string,string>filesPaths=new Dictionary<string,string>();
     private long maxFileSize = 1024 * 15;
     private int maxAllowedFiles = 3;
     private string uploadStatus = "";
@@ -74,13 +75,15 @@
 
                 newChatMessage.TicketId = idOfCreatedTicket;
                 int idOfCreatedChatMessage = await _cmService.CreateChatMessage(newChatMessage);
-                foreach (string fp in filesPaths)
+                foreach (var fp in filesPaths)
                 {
                     //filepath settings
                     FilePath f = new()
                     {
                         ChatMessageId = idOfCreatedChatMessage,
-                        Path = fp
+                        Path = fp.Key,
+                        ShortPath=fp.Value
+
                     };
                     await _fpService.CreateFilePath(f);
                 }
@@ -96,6 +99,7 @@
     }
     private async Task LoadFiles(InputFileChangeEventArgs e)
     {
+        //should do a count if the button pressed more than one times to delete the old imgs
         uploadStatus = "Uploading";
         filesPaths.Clear();
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
@@ -182,12 +186,14 @@
                                     if (!Directory.Exists(pathForFile))
                                     {
                                         await File.WriteAllBytesAsync(pathForFile, ms.ToArray());
-                                        filesPaths.Add(pathForFile);
+                                        //key-long path, value-short path
+                                        filesPaths.Add(pathForFile,file.Name);
                                     }
                                     else
                                     {
                                         //if file has already been uploaded just save the path
-                                        filesPaths.Add(pathForFile);
+                                        //key-long path, value-short path
+                                        filesPaths.Add(pathForFile,file.Name);
                                     }
                                 }
                             }

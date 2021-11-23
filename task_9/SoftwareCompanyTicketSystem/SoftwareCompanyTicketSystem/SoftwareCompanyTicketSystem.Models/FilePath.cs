@@ -13,8 +13,11 @@ namespace SoftwareCompanyTicketSystem.Models
         [Key]
         public int FilePathId { get; set; }
 
-        [MinLength(5),MaxLength(100), Column(TypeName = "varchar")]
+        [MinLength(5), MaxLength(1000), Column(TypeName = "varchar")]
         public string Path { get; set; }
+
+        [Column(TypeName = "varchar"), MaxLength(300)]
+        public string ShortPath { get; set; }
         public bool IsDeleted { get; set; }
 
         [ForeignKey("ChatMessage")]

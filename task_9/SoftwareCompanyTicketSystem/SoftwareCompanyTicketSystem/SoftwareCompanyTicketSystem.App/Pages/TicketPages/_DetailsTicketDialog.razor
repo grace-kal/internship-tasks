@@ -1,0 +1,86 @@
+﻿@inject ITicketService _ticketService
+@using System.IO
+@if (displayDialog)
+{
+    <div class="modal fade show d-block" id="exampleModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="titleLabel">Details</h5>
+                    <button type="button" class="close" @onclick="@Close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div style="border:solid 2px black; margin:10px;padding:10px;">
+                        <i>Send by: @ticket.Author.UserName (@ticket.Author.Level)</i>
+                        <br />
+                        <i>Date: @ticket.SendOn</i>
+                        <br />
+                        <i style="text-align:right;">Chat(@ticket.ChatMessages.Count())</i>
+                        <h2>@ticket.Title</h2>
+                        <h4>@ticket.Content</h4>
+                    </div>
+                    @foreach (ChatMessage cm in ticket.ChatMessages)
+                    {
+                        <div>
+                            <i><b>@cm.Author.UserName</b></i>
+                            <i>@cm.SendOn</i>
+                            <h4>@cm.Content</h4>
+                            
+                            @foreach (FilePath path in cm.FilePaths)
+                            {
+                                <img src="~/uploads/{@ticket.Author.UserName}/{@path.ShortPath}"/>
+                            }
+                        </div>
+                    }
+
+                    <a class="btn btn-outline-dark" @onclick="@Close">Close</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    //passed parameter FROM the child component above this one
+    //note: it might not be needed as the id is passed through the Show() method
+    [Parameter]
+    public int TicketId { get; set; }
+
+    Ticket ticket = new();
+    private bool displayDialog = false;
+
+    //id is passed FROM the child component above this one in the hierarchy(_ListOfTickets)
+    public async Task Show(int id)
+    {
+        this.displayDialog = true;
+        //finding the ticket with the passed id
+        ticket = await _ticketService.ReadTicket(id);
+    }
+    public void Close()
+    {
+        this.displayDialog = false;
+    }
+    public async Task Edit()
+    {
+        try
+        {
+            Ticket t = new();
+            t.TicketId = ticket.TicketId;
+            t.Title = ticket.Title;
+            t.Content = ticket.Content;
+            t.SendOn = ticket.SendOn;
+            t.AuthorId = ticket.AuthorId;
+            await _ticketService.EditTicket(t);
+
+            //eventcallback to the child component above this one in the hierarchy(_ListOfTickets)
+            //await TicketEditedEC.InvokeAsync();
+        }
+        catch (Exception e)
+        {
+
+        }
+
+    }
+}
